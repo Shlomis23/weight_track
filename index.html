@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מעקב מאקרו יומי</title>
+  <style>
+    :root {
+      --bg: linear-gradient(180deg, #fff7fb 0%, #f8f3ff 100%);
+      --card: rgba(255, 255, 255, 0.9);
+      --card-strong: #ffffff;
+      --primary: #d96fb3;
+      --primary-dark: #bf4f99;
+      --secondary: #b695f5;
+      --secondary-dark: #9472df;
+      --accent: #ffe0f0;
+      --text: #4b3552;
+      --muted: #8f7a96;
+      --border: #efdff6;
+      --danger: #d63d5c;
+      --success: #4b9a76;
+      --shadow: 0 14px 40px rgba(181, 125, 178, 0.16);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", "Arial", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .shell {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: 20px;
+    }
+
+    .hero {
+      margin-bottom: 18px;
+    }
+
+    .title {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.55;
+    }
+
+    .section {
+      background: var(--card-strong);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 16px;
+      margin-top: 14px;
+      box-shadow: 0 6px 18px rgba(193, 151, 200, 0.08);
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    input[type="number"] {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 14px;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 4px rgba(182, 149, 245, 0.16);
+    }
+
+    .helper {
+      font-size: 0.84rem;
+      color: var(--muted);
+      margin-top: -2px;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+      width: 100%;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(191, 79, 153, 0.22);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.96;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--primary-dark);
+      border: 1.5px solid #f0d5e8;
+    }
+
+    .btn-secondary:hover {
+      background: #fff8fc;
+    }
+
+    .error {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff0f4;
+      color: var(--danger);
+      font-size: 0.93rem;
+      font-weight: 700;
+      border: 1px solid #ffd5de;
+      display: none;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .macro-card {
+      background: linear-gradient(180deg, #fff 0%, #fffafd 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 15px;
+    }
+
+    .macro-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .macro-name {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .macro-badge {
+      background: var(--accent);
+      color: var(--primary-dark);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .macro-stats {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+      font-size: 0.94rem;
+      color: var(--text);
+    }
+
+    .macro-stats strong {
+      font-weight: 800;
+    }
+
+    .remaining {
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .exceeded {
+      color: var(--danger);
+      font-weight: 800;
+      margin-top: 10px;
+      line-height: 1.5;
+      background: #fff1f4;
+      border: 1px solid #ffd6df;
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+
+    .today-date {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(41, 20, 40, 0.55);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-dialog {
+      position: relative;
+      z-index: 1;
+      width: calc(100% - 24px);
+      max-width: 440px;
+      margin: 9vh auto 0;
+      background: #fff;
+      border-radius: 26px;
+      padding: 20px;
+      box-shadow: 0 22px 50px rgba(57, 23, 56, 0.28);
+      border: 1px solid #f2e7f6;
+      animation: popIn 0.2s ease;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      border: 0;
+      background: #fff3fa;
+      color: var(--primary-dark);
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px 8px 2px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 14px;
+      padding-bottom: 4px;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 24px;
+      }
+
+      .shell {
+        padding: 24px;
+      }
+
+      .actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .actions.single {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <main class="shell">
+      <section class="hero">
+        <h1 class="title">מעקב מאקרו יומי</h1>
+        <p class="subtitle">
+          הגדירו את היעדים שלכם להיום, הזינו ארוחות לאורך היום, וראו כמה אכלתם וכמה נשאר.
+        </p>
+      </section>
+
+      <div id="setupScreen" class="section" aria-live="polite">
+        <h2 class="section-title">הגדרת יעדים יומיים</h2>
+
+        <form id="targetsForm" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="targetProtein">יעד חלבון יומי (גרם)</label>
+              <input id="targetProtein" name="targetProtein" type="number" min="0" step="1" inputmode="numeric" placeholder="למשל 140" />
+            </div>
+
+            <div class="field">
+              <label for="targetCarbs">יעד פחמימות יומי (גרם)</label>
+              <input id="targetCarbs" name="targetCarbs" type="number" min="0" step="1" inputmode="numeric" placeholder="למשל 180" />
+            </div>
+
+            <div class="field">
+              <label for="targetFat">יעד שומן יומי (גרם)</label>
+              <input id="targetFat" name="targetFat" type="number" min="0" step="1" inputmode="numeric" placeholder="למשל 60" />
+            </div>
+          </div>
+
+          <div class="helper">יש להזין מספרים בלבד. לא ניתן להזין ערכים שליליים.</div>
+          <div id="targetsError" class="error" role="alert"></div>
+
+          <div class="actions single">
+            <button type="submit" class="btn btn-primary">שמור יעדים להיום</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="dashboardScreen" class="section" aria-live="polite" style="display: none;">
+        <h2 class="section-title">לוח הבקרה של היום</h2>
+        <div id="todayDate" class="today-date"></div>
+
+        <div class="dashboard-grid" id="dashboardContent"></div>
+
+        <div class="actions">
+          <button id="openMealModalBtn" class="btn btn-primary" type="button">הזן ארוחה</button>
+          <button id="newDayBtn" class="btn btn-secondary" type="button">התחל יום חדש</button>
+        </div>
+      </div>
+
+      <div class="footer-note">כל הנתונים נשמרים במכשיר שלך בלבד.</div>
+    </main>
+  </div>
+
+  <div id="mealModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="mealModalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="mealModalTitle">הזן ארוחה</h3>
+        <button type="button" class="close-btn" id="closeMealModalBtn" aria-label="סגירה">×</button>
+      </div>
+
+      <form id="mealForm" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="mealProtein">כמה גרם חלבון?</label>
+            <input id="mealProtein" name="mealProtein" type="number" min="0" step="1" inputmode="numeric" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="mealCarbs">כמה גרם פחמימה?</label>
+            <input id="mealCarbs" name="mealCarbs" type="number" min="0" step="1" inputmode="numeric" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="mealFat">כמה גרם שומן?</label>
+            <input id="mealFat" name="mealFat" type="number" min="0" step="1" inputmode="numeric" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="helper">שדות ריקים ייחשבו כ־0. לא ניתן להזין ערכים שליליים.</div>
+        <div id="mealError" class="error" role="alert"></div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">שמור ארוחה</button>
+          <button type="button" class="btn btn-secondary" id="cancelMealBtn">ביטול</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_TARGETS_KEY = "dailyTargets";
+      const STORAGE_TOTALS_KEY = "dailyTotals";
+
+      const setupScreen = document.getElementById("setupScreen");
+      const dashboardScreen = document.getElementById("dashboardScreen");
+      const dashboardContent = document.getElementById("dashboardContent");
+      const todayDateEl = document.getElementById("todayDate");
+
+      const targetsForm = document.getElementById("targetsForm");
+      const targetsError = document.getElementById("targetsError");
+      const targetProteinInput = document.getElementById("targetProtein");
+      const targetCarbsInput = document.getElementById("targetCarbs");
+      const targetFatInput = document.getElementById("targetFat");
+
+      const mealModal = document.getElementById("mealModal");
+      const modalOverlay = document.getElementById("modalOverlay");
+      const openMealModalBtn = document.getElementById("openMealModalBtn");
+      const closeMealModalBtn = document.getElementById("closeMealModalBtn");
+      const cancelMealBtn = document.getElementById("cancelMealBtn");
+
+      const mealForm = document.getElementById("mealForm");
+      const mealError = document.getElementById("mealError");
+      const mealProteinInput = document.getElementById("mealProtein");
+      const mealCarbsInput = document.getElementById("mealCarbs");
+      const mealFatInput = document.getElementById("mealFat");
+
+      const newDayBtn = document.getElementById("newDayBtn");
+
+      function getTodayDateKey() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function getTodayDateDisplay() {
+        return new Date().toLocaleDateString("he-IL", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
+      }
+
+      function sanitizeNumericInputValue(input) {
+        let value = input.value.trim();
+
+        if (value === "") return;
+
+        value = value.replace(",", ".");
+        if (!/^\d*\.?\d*$/.test(value)) {
+          input.value = "";
+          return;
+        }
+
+        const numericValue = Number(value);
+        if (Number.isNaN(numericValue) || numericValue < 0) {
+          input.value = "";
+        }
+      }
+
+      function attachNumericGuards(inputs) {
+        inputs.forEach((input) => {
+          input.addEventListener("input", () => sanitizeNumericInputValue(input));
+          input.addEventListener("keydown", (event) => {
+            if (["e", "E", "+", "-"].includes(event.key)) {
+              event.preventDefault();
+            }
+          });
+        });
+      }
+
+      attachNumericGuards([
+        targetProteinInput,
+        targetCarbsInput,
+        targetFatInput,
+        mealProteinInput,
+        mealCarbsInput,
+        mealFatInput
+      ]);
+
+      function readJSON(key) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : null;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function writeJSON(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      function clearStorageForDay() {
+        localStorage.removeItem(STORAGE_TARGETS_KEY);
+        localStorage.removeItem(STORAGE_TOTALS_KEY);
+      }
+
+      function getStoredTargets() {
+        const data = readJSON(STORAGE_TARGETS_KEY);
+        if (!data || data.date !== getTodayDateKey()) return null;
+        return {
+          protein: Number(data.protein) || 0,
+          carbs: Number(data.carbs) || 0,
+          fat: Number(data.fat) || 0,
+          date: data.date
+        };
+      }
+
+      function getStoredTotals() {
+        const data = readJSON(STORAGE_TOTALS_KEY);
+        if (!data) {
+          return { protein: 0, carbs: 0, fat: 0 };
+        }
+        return {
+          protein: Number(data.protein) || 0,
+          carbs: Number(data.carbs) || 0,
+          fat: Number(data.fat) || 0
+        };
+      }
+
+      function showError(element, message) {
+        element.textContent = message;
+        element.style.display = "block";
+      }
+
+      function hideError(element) {
+        element.textContent = "";
+        element.style.display = "none";
+      }
+
+      function parseRequiredNonNegativeNumber(value) {
+        if (value === "") return { valid: false, value: null };
+        const normalized = value.replace(",", ".");
+        const numericValue = Number(normalized);
+        if (!Number.isFinite(numericValue) || numericValue < 0) {
+          return { valid: false, value: null };
+        }
+        return { valid: true, value: numericValue };
+      }
+
+      function parseOptionalNonNegativeNumber(value) {
+        if (value.trim() === "") return { valid: true, value: 0 };
+        const normalized = value.replace(",", ".");
+        const numericValue = Number(normalized);
+        if (!Number.isFinite(numericValue) || numericValue < 0) {
+          return { valid: false, value: null };
+        }
+        return { valid: true, value: numericValue };
+      }
+
+      function formatGrams(num) {
+        if (Number.isInteger(num)) return String(num);
+        return num.toFixed(1).replace(/\.0$/, "");
+      }
+
+      function createMacroCard(label, key, targets, totals) {
+        const target = Number(targets[key]) || 0;
+        const eaten = Number(totals[key]) || 0;
+        const diff = target - eaten;
+        const remainingMarkup =
+          diff >= 0
+            ? `<div class="remaining">נשאר לאכול: <strong>${formatGrams(diff)}</strong> גרם</div>`
+            : "";
+
+        const exceededMarkup =
+          diff < 0
+            ? `<div class="exceeded">חרגת ב־${formatGrams(Math.abs(diff))} גרם מיעד ה${label} היום</div>`
+            : "";
+
+        return `
+          <div class="macro-card">
+            <div class="macro-top">
+              <div class="macro-name">${label}</div>
+              <div class="macro-badge">יעד: ${formatGrams(target)} גרם</div>
+            </div>
+
+            <div class="macro-stats">
+              <div>נאכל עד עכשיו: <strong>${formatGrams(eaten)}</strong> גרם</div>
+              <div>${diff >= 0 ? remainingMarkup : ""}</div>
+            </div>
+
+            ${exceededMarkup}
+          </div>
+        `;
+      }
+
+      function renderDashboard() {
+        const targets = getStoredTargets();
+        const totals = getStoredTotals();
+
+        if (!targets) {
+          showSetupScreen();
+          return;
+        }
+
+        showDashboardScreen();
+
+        todayDateEl.textContent = `היום: ${getTodayDateDisplay()}`;
+
+        dashboardContent.innerHTML = `
+          ${createMacroCard("חלבון", "protein", targets, totals)}
+          ${createMacroCard("פחמימה", "carbs", targets, totals)}
+          ${createMacroCard("שומן", "fat", targets, totals)}
+        `;
+      }
+
+      function showSetupScreen() {
+        setupScreen.style.display = "block";
+        dashboardScreen.style.display = "none";
+      }
+
+      function showDashboardScreen() {
+        setupScreen.style.display = "none";
+        dashboardScreen.style.display = "block";
+      }
+
+      function openMealModal() {
+        hideError(mealError);
+        mealForm.reset();
+        mealModal.classList.remove("hidden");
+        mealModal.setAttribute("aria-hidden", "false");
+        setTimeout(() => mealProteinInput.focus(), 0);
+      }
+
+      function closeMealModal() {
+        mealModal.classList.add("hidden");
+        mealModal.setAttribute("aria-hidden", "true");
+      }
+
+      function initializeApp() {
+        const targets = getStoredTargets();
+
+        if (!targets) {
+          clearStorageForDay();
+          showSetupScreen();
+          return;
+        }
+
+        renderDashboard();
+      }
+
+      targetsForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        hideError(targetsError);
+
+        const protein = parseRequiredNonNegativeNumber(targetProteinInput.value.trim());
+        const carbs = parseRequiredNonNegativeNumber(targetCarbsInput.value.trim());
+        const fat = parseRequiredNonNegativeNumber(targetFatInput.value.trim());
+
+        if (!protein.valid || !carbs.valid || !fat.valid) {
+          showError(targetsError, "יש להזין מספרים תקינים בלבד, ללא ערכים שליליים.");
+          return;
+        }
+
+        const dailyTargets = {
+          protein: protein.value,
+          carbs: carbs.value,
+          fat: fat.value,
+          date: getTodayDateKey()
+        };
+
+        const dailyTotals = {
+          protein: 0,
+          carbs: 0,
+          fat: 0
+        };
+
+        writeJSON(STORAGE_TARGETS_KEY, dailyTargets);
+        writeJSON(STORAGE_TOTALS_KEY, dailyTotals);
+
+        renderDashboard();
+      });
+
+      openMealModalBtn.addEventListener("click", openMealModal);
+      closeMealModalBtn.addEventListener("click", closeMealModal);
+      cancelMealBtn.addEventListener("click", closeMealModal);
+      modalOverlay.addEventListener("click", closeMealModal);
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !mealModal.classList.contains("hidden")) {
+          closeMealModal();
+        }
+      });
+
+      mealForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        hideError(mealError);
+
+        const protein = parseOptionalNonNegativeNumber(mealProteinInput.value);
+        const carbs = parseOptionalNonNegativeNumber(mealCarbsInput.value);
+        const fat = parseOptionalNonNegativeNumber(mealFatInput.value);
+
+        if (!protein.valid || !carbs.valid || !fat.valid) {
+          showError(mealError, "יש להזין מספרים תקינים בלבד, ללא ערכים שליליים.");
+          return;
+        }
+
+        const existingTotals = getStoredTotals();
+
+        const updatedTotals = {
+          protein: existingTotals.protein + protein.value,
+          carbs: existingTotals.carbs + carbs.value,
+          fat: existingTotals.fat + fat.value
+        };
+
+        writeJSON(STORAGE_TOTALS_KEY, updatedTotals);
+        closeMealModal();
+        renderDashboard();
+      });
+
+      newDayBtn.addEventListener("click", function () {
+        clearStorageForDay();
+        targetsForm.reset();
+        mealForm.reset();
+        hideError(targetsError);
+        hideError(mealError);
+        showSetupScreen();
+      });
+
+      initializeApp();
+    })();
+  </script>
+</body>
+</html>
